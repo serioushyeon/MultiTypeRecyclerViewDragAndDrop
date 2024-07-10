@@ -48,13 +48,13 @@
         android:scrollbarThumbVertical="@color/primary"
         android:scrollbarTrackVertical="@color/gray3"
         android:scrollbars="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/BottomDivider"
+        app:layout_constraintBottom_toTopOf="@+id/bottomDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/topDivider" />
 
     <View
-        android:id="@+id/BottomDivider"
+        android:id="@+id/bottomDivider"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginStart="20dp"
@@ -67,39 +67,23 @@
 
     <Button
         android:id="@+id/btn_flow_controller_breath"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/AddTimeButton"
         android:layout_marginStart="20dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/white"
-        android:paddingHorizontal="9dp"
-        android:paddingVertical="11dp"
-        android:tag="숨 고르기 (1초)"
-        android:text="숨 고르기 (1초)"
+        android:tag="@string/breathButton"
+        android:text="@string/breathButton"
         android:textColor="@color/input_text"
-        app:cornerRadius="8dp"
         app:layout_constraintBottom_toTopOf="@+id/btn_flow_controller_next"
-        app:layout_constraintStart_toStartOf="parent"
-        app:strokeColor="@color/gray2"
-        app:strokeWidth="1dp" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_flow_controller_ppt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/white"
-        android:paddingHorizontal="9dp"
-        android:paddingVertical="11dp"
-        android:tag="PPT 넘김 (2초)"
-        android:text="PPT 넘김 (2초)"
-        android:textColor="@color/input_text"
-        app:cornerRadius="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_flow_controller_next"
-        app:layout_constraintStart_toEndOf="@+id/btn_flow_controller_breath"
-        app:strokeColor="@color/gray2"
-        app:strokeWidth="1dp" />
+        style="@style/AddTimeButton"
+        android:layout_marginStart="10dp"
+        android:tag="@string/pptButton"
+        android:text="@string/pptButton"
+        app:layout_constraintBottom_toBottomOf="@+id/btn_flow_controller_breath"
+        app:layout_constraintStart_toEndOf="@+id/btn_flow_controller_breath" />
 
     <Button
         android:id="@+id/btn_flow_controller_next"
