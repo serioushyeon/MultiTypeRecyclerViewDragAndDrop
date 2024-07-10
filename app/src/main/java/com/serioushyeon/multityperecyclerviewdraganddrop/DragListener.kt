@@ -5,7 +5,8 @@ import android.view.DragEvent
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
-class DragListener() : View.OnDragListener {
+class DragListener(recyclerView: RecyclerView) : View.OnDragListener {
+    var rv = recyclerView
     override fun onDrag(v: View, event: DragEvent): Boolean {
         when (event.action) {
             DragEvent.ACTION_DRAG_LOCATION -> {
@@ -68,7 +69,7 @@ class DragListener() : View.OnDragListener {
                                     val customListTarget =
                                         adapterTarget.getList().toMutableList() //리스트 가져옴
                                     Log.d("MyLog", "customListTarget $customListTarget")
-                                    if(viewSource.id == btnBreathItem) {
+                                    if (viewSource.id == btnBreathItem) {
                                         if (positionTarget < 0) { //만약 드롭 할 위치가 0보다 작다면
                                             customListTarget.add(MultiTypeItem.BreathButtonItem) //드래그 한 아이템을 리스트의 마지막에 추가
                                         } else {
@@ -77,8 +78,7 @@ class DragListener() : View.OnDragListener {
                                                 MultiTypeItem.BreathButtonItem
                                             ) //드래그한 아이템을 알맞은 위치에 추가
                                         }
-                                    }
-                                    else {
+                                    } else {
                                         if (positionTarget < 0) { //만약 드롭 할 위치가 0보다 작다면
                                             customListTarget.add(MultiTypeItem.PPTButtonItem) //드래그 한 아이템을 리스트의 마지막에 추가
                                         } else {
@@ -93,21 +93,25 @@ class DragListener() : View.OnDragListener {
                                 }
                             }
                         }
+
                         else -> {
                             when (viewId) { //드롭 대상 뷰 아이디
                                 btnRVBreathItem, btnRVPPTItem, sentenceClItem, rvTop, rvBottom -> {
                                     Log.d("MyLog", "btnClItem, sentenceClItem, rvTop, rvBottom")
-                                    val target: RecyclerView = v.parent as RecyclerView //타겟은 리사이클러 뷰
+                                    val target: RecyclerView =
+                                        v.parent as RecyclerView //타겟은 리사이클러 뷰
 
                                     positionTarget = v.tag as Int //드롭 대상인 뷰의 위치 인덱스
                                     Log.d("MyLog", "positionTarget = $positionTarget")
 
                                     Log.d("MyLog", "viewSource $viewSource")
                                     if (viewSource != null) {
-                                        val source = viewSource.parent as RecyclerView //리사이클러뷰
-                                        val adapterSource = source.adapter as RecyclerViewAdapter //어댑터
+                                        Log.d("viewSource_parent", "${viewSource.parent}")
+                                        val adapterSource =
+                                            rv.adapter as RecyclerViewAdapter //어댑터
                                         val positionSource = viewSource.tag as Int //드래그한 아이템의 포지션
-                                        positionTarget = if(positionTarget < positionSource) positionTarget + 1 else positionTarget
+                                        positionTarget =
+                                            if (positionTarget < positionSource) positionTarget + 1 else positionTarget
                                         //드래드하고 있는 뷰가 항상 드롭되는 위치의 하단에 추가되기 위함
                                         //만약 드래그 하고 있는 뷰의 인덱스가 드롭되는 위치의 인덱스보다 작거나 동일하다면 자기 자신이 삭제되면서 드롭 되는 뷰의 실제 인덱스는 positionTarget -1이 된다.
                                         //따라서 positionTarget은 드롭 되는 위치의 바로 다음을 의미한다.
@@ -117,21 +121,28 @@ class DragListener() : View.OnDragListener {
                                         //따라서 positionTarget + 1을 해주어야 드롭되는 뷰의 하단에 위치하게 된다.
 
                                         Log.d("MyLog", "positionSource $positionSource")
-                                        val list = adapterSource.getList()[positionSource] //드래그한 아이템 가져옴
-                                        val listSource = adapterSource.getList().toMutableList() //전체 리스트
+                                        val list =
+                                            adapterSource.getList()[positionSource] //드래그한 아이템 가져옴
+                                        val listSource =
+                                            adapterSource.getList().toMutableList() //전체 리스트
 
                                         listSource.removeAt(positionSource) //전체 리스트에서 드래그한 아이템 원래 위치 삭제
                                         adapterSource.updateList(listSource) //전체 리스트 업데이트
                                         adapterSource.notifyDataSetChanged() //어댑터에 알림
 
-                                        val adapterTarget = target.adapter as RecyclerViewAdapter //다시 어댑터 가져옴
+                                        val adapterTarget =
+                                            target.adapter as RecyclerViewAdapter //다시 어댑터 가져옴
                                         Log.d("MyLog", "target $target")
-                                        val customListTarget = adapterTarget.getList().toMutableList() //다시 리스트 가져옴
+                                        val customListTarget =
+                                            adapterTarget.getList().toMutableList() //다시 리스트 가져옴
                                         Log.d("MyLog", "customListTarget $customListTarget")
                                         if (positionTarget < 0) { //만약 드롭 할 위치가 0보다 작다면 (리스트가 빈 경우)
                                             customListTarget.add(list) //드래그 한 아이템을 리스트에 추가
                                         } else {
-                                            customListTarget.add(positionTarget, list) //드래그한 아이템을 알맞은 위치에 추가
+                                            customListTarget.add(
+                                                positionTarget,
+                                                list
+                                            ) //드래그한 아이템을 알맞은 위치에 추가
                                         }
                                         adapterTarget?.updateList(customListTarget) //리스트 업데이트
                                         adapterTarget?.notifyDataSetChanged() // 어댑터에 알림

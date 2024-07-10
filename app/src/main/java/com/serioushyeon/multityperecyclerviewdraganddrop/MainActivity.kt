@@ -4,6 +4,9 @@ import android.content.ClipData
 import android.content.ClipDescription
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.view.DragEvent
 import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
@@ -27,9 +30,11 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         initToolBar()
-        setupDragListeners(binding.btnFlowControllerBreath, R.layout.layout_custom_shadow_breath)
-        setupDragListeners(binding.btnFlowControllerPpt, R.layout.layout_custom_shadow_ppt)
         initMultiTypeRecyclerView()
+
+        setupLongClickListener(binding.btnFlowControllerBreath, R.layout.layout_custom_shadow_breath)
+        setupLongClickListener(binding.btnFlowControllerPpt, R.layout.layout_custom_shadow_ppt)
+        setupDragListener()
     }
     private fun initMultiTypeRecyclerView() {
         binding.rvScript.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -41,10 +46,10 @@ class MainActivity : AppCompatActivity() {
         items.add(MultiTypeItem.TextItem("다음으로, 단기간 개발을 위한 프로젝트 아이디어를 몇 가지 소개하겠습니다."))
         items.add(MultiTypeItem.TextItem("첫 번째 아이디어는 '일기장 앱'입니다. 사용자가 매일의 일기를 쓰고 사진을 첨부할 수 있는 간단한 앱입니다."))
         items.add(MultiTypeItem.TextItem("이 프로젝트는 데이터 저장과 UI 디자인의 기본을 다루기 때문에 초보 개발자에게 적합합니다."))
-        val multiTypeRecyclerViewAdapter = RecyclerViewAdapter(items)
+        val multiTypeRecyclerViewAdapter = RecyclerViewAdapter(items, binding.rvScript)
         binding.rvScript.adapter = multiTypeRecyclerViewAdapter
     }
-    private fun setupDragListeners(button: Button, dragShadowLayout: Int) {
+    private fun setupLongClickListener(button: Button, dragShadowLayout: Int) {
         button.setOnLongClickListener { view ->
             val item = ClipData.Item(view.tag as? CharSequence)
             val dragData =
@@ -58,6 +63,74 @@ class MainActivity : AppCompatActivity() {
             true
         }
     }
+
+    //자동 스크롤
+    private fun setupDragListener() {
+        val handler = Handler(Looper.getMainLooper())
+        var isScrolling = false
+
+        val scrollRunnableTop = object : Runnable {
+            override fun run() {
+                if (isScrolling) {
+                    binding.rvScript.scrollBy(0, -30)
+                    handler.postDelayed(this, 50)
+                }
+            }
+        }
+
+        val scrollRunnableBottom = object : Runnable {
+            override fun run() {
+                if (isScrolling) {
+                    binding.rvScript.scrollBy(0, 30)
+                    handler.postDelayed(this, 50)
+                }
+            }
+        }
+
+        binding.spFlowControllerTop.setOnDragListener { v, event ->
+            when (event.action) {
+                DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_LOCATION -> {
+                    val y = event.y
+                    val threshold = 100
+
+                    if (y < threshold && !isScrolling) {
+                        isScrolling = true
+                        handler.post(scrollRunnableTop)
+                    }
+                    true
+                }
+                DragEvent.ACTION_DRAG_EXITED, DragEvent.ACTION_DROP, DragEvent.ACTION_DRAG_ENDED -> {
+                    isScrolling = false
+                    handler.removeCallbacks(scrollRunnableTop)
+                    true
+                }
+                else -> true
+            }
+        }
+
+        binding.spFlowControllerBottom.setOnDragListener { v, event ->
+            when (event.action) {
+                DragEvent.ACTION_DRAG_ENTERED, DragEvent.ACTION_DRAG_LOCATION -> {
+                    val y = event.y
+                    val threshold = 100
+
+                    if (y < threshold && !isScrolling) {
+                        isScrolling = true
+                        handler.post(scrollRunnableBottom)
+                    }
+                    true
+                }
+                DragEvent.ACTION_DRAG_EXITED, DragEvent.ACTION_DROP, DragEvent.ACTION_DRAG_ENDED -> {
+                    isScrolling = false
+                    handler.removeCallbacks(scrollRunnableBottom)
+                    true
+                }
+                else -> true
+            }
+        }
+    }
+
+
     private fun initToolBar() {
         binding.toolbar.run {
             buttonBack.visibility = View.VISIBLE

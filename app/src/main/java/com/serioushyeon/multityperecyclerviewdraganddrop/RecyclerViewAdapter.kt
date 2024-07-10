@@ -10,9 +10,8 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
-class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnLongClickListener {
-
-
+class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>, private var recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnLongClickListener {
+    //recyclerView 변수는 아이템 스크롤 시 부모뷰를 잃어버리기 때문에 추가한 변수
     companion object {
         private const val TYPE_TEXT = 0
         private const val TYPE_BREATH_BUTTON = 1
@@ -39,7 +38,7 @@ class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : Recyc
         fun bind(text: String, adapter: RecyclerViewAdapter, position: Int) {
             itemView.findViewById<TextView>(R.id.tv_rv_sentence).text = text
             itemView.findViewById<ConstraintLayout>(R.id.cl_sentence).tag = position
-            itemView.findViewById<ConstraintLayout>(R.id.cl_sentence).setOnDragListener(DragListener())
+            itemView.findViewById<ConstraintLayout>(R.id.cl_sentence).setOnDragListener(DragListener(adapter.recyclerView))
         }
     }
 
@@ -48,7 +47,10 @@ class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : Recyc
             itemView.findViewById<ConstraintLayout>(R.id.cl_breath_btn).tag = position
             itemView.findViewById<ConstraintLayout>(R.id.btn_rv_breath).tag = position
             itemView.findViewById<ConstraintLayout>(R.id.btn_rv_breath).setOnLongClickListener(adapter)
-            itemView.findViewById<ConstraintLayout>(R.id.cl_breath_btn).setOnDragListener(DragListener())
+            itemView.findViewById<ConstraintLayout>(R.id.cl_breath_btn).setOnDragListener(DragListener(
+                adapter.recyclerView
+            )
+            )
             itemView.findViewById<ImageView>(R.id.iv_breath_delete).setOnClickListener{
                 adapter.removeItemAt(position)
             }
@@ -60,7 +62,10 @@ class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : Recyc
             itemView.findViewById<ConstraintLayout>(R.id.cl_ppt_btn).tag = position
             itemView.findViewById<ConstraintLayout>(R.id.btn_rv_ppt).tag = position
             itemView.findViewById<ConstraintLayout>(R.id.btn_rv_ppt).setOnLongClickListener(adapter)
-            itemView.findViewById<ConstraintLayout>(R.id.cl_ppt_btn).setOnDragListener(DragListener())
+            itemView.findViewById<ConstraintLayout>(R.id.cl_ppt_btn).setOnDragListener(DragListener(
+                adapter.recyclerView
+            )
+            )
             itemView.findViewById<ImageView>(R.id.iv_ppt_delete).setOnClickListener{
                 adapter.removeItemAt(position)
             }
