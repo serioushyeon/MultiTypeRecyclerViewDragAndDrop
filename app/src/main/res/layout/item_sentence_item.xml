@@ -6,7 +6,7 @@
     android:layout_height="wrap_content">
 
     <View
-        android:id="@+id/divider_sentence_top"
+        android:id="@+id/divider_top"
         android:layout_width="match_parent"
         android:layout_height="6dp"
         android:background="@color/primary_disable"
@@ -19,23 +19,24 @@
         android:id="@+id/tv_rv_sentence"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:fontFamily="@font/pretendard_medium"
-        android:paddingBottom="12sp"
         android:text="TextView"
         android:textColor="@color/text"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/divider_bottom"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider_top"
         app:lineHeight="44sp" />
 
     <View
-        android:id="@+id/divider_sentence_bottom"
+        android:id="@+id/divider_bottom"
         android:layout_width="match_parent"
         android:layout_height="6dp"
+        android:layout_marginBottom="4dp"
         android:background="@color/primary_disable"
-        android:visibility="gone"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
