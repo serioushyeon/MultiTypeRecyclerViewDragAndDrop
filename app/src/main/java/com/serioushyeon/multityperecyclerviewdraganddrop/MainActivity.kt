@@ -5,6 +5,7 @@ import android.content.ClipDescription
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -26,7 +27,8 @@ class MainActivity : AppCompatActivity() {
             insets
         }
         initToolBar()
-        setupDragListeners()
+        setupDragListeners(binding.btnFlowControllerBreath, R.layout.layout_custom_shadow_breath)
+        setupDragListeners(binding.btnFlowControllerPpt, R.layout.layout_custom_shadow_ppt)
         initMultiTypeRecyclerView()
     }
     private fun initMultiTypeRecyclerView() {
@@ -42,20 +44,18 @@ class MainActivity : AppCompatActivity() {
         val multiTypeRecyclerViewAdapter = RecyclerViewAdapter(items)
         binding.rvScript.adapter = multiTypeRecyclerViewAdapter
     }
-    private fun setupDragListeners() {
-        val buttons = listOf(binding.btnFlowControllerBreath, binding.btnFlowControllerPpt)
-        buttons.forEach { button ->
-            button.setOnLongClickListener { view ->
-                val item = ClipData.Item(view.tag as? CharSequence)
-                val dragData = ClipData(view.tag.toString(), arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
-                val shadowBuilder = View.DragShadowBuilder(view)
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    view.startDragAndDrop(dragData, shadowBuilder, view, 0)
-                } else {
-                    view.startDrag(dragData, shadowBuilder, view, 0)
-                }
-                true
+    private fun setupDragListeners(button: Button, dragShadowLayout: Int) {
+        button.setOnLongClickListener { view ->
+            val item = ClipData.Item(view.tag as? CharSequence)
+            val dragData =
+                ClipData(view.tag.toString(), arrayOf(ClipDescription.MIMETYPE_TEXT_PLAIN), item)
+            val dragShadow = CustomDragShadowBuilder(this, dragShadowLayout) // 원하는 레이아웃 ID
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                view.startDragAndDrop(dragData, dragShadow, view, 0)
+            } else {
+                view.startDrag(dragData, dragShadow, view, 0)
             }
+            true
         }
     }
     private fun initToolBar() {

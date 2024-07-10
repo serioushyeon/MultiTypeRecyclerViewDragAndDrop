@@ -72,7 +72,6 @@
         android:layout_marginBottom="16dp"
         android:tag="@string/breathButton"
         android:text="@string/breathButton"
-        android:textColor="@color/input_text"
         app:layout_constraintBottom_toTopOf="@+id/btn_flow_controller_next"
         app:layout_constraintStart_toStartOf="parent" />
 
