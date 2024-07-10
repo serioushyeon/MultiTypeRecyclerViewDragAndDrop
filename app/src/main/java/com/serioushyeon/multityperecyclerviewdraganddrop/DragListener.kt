@@ -6,16 +6,32 @@ import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
 class DragListener() : View.OnDragListener {
-
-    private var isDropped = false //드래그된 항목이 드롭되었는지 여부
-
     override fun onDrag(v: View, event: DragEvent): Boolean {
         when (event.action) {
-            // DragEvent.ACTION_DROP,
-            // DragEvent.ACTION_DRAG_EXITED
+            DragEvent.ACTION_DRAG_LOCATION -> {
+                Log.d("itemView", v.toString())
+                //val itemHeight = v.height
+                //val dragY = event.y
+
+                //val topDivider = v.findViewById<View>(R.id.divider_top)
+                val bottomDivider = v.findViewById<View>(R.id.divider_bottom)
+
+                val viewSource = event.localState as? View //내가 드래그 한 원본 뷰, 이벤트의 localState에서 가져옴
+
+                if(v != viewSource) {
+                    bottomDivider.visibility = View.VISIBLE
+                    //하단 주석 코드는 만약 topDivider도 사용할때 활용 가능
+                    /*if (dragY < itemHeight) {
+                        //topDivider.visibility = View.VISIBLE
+                        bottomDivider.visibility = View.INVISIBLE
+                    } else {
+                        //topDivider.visibility = View.GONE
+                        bottomDivider.visibility = View.VISIBLE
+                    }*/
+                }
+            }
             DragEvent.ACTION_DROP -> {
                 Log.d("MyLog", "ACTION_DROP")
-                isDropped = true
                 var positionTarget: Int //드롭 대상 위치, 드래그 이벤트가 발생한 뷰의 위치를 나타내기 위해 사용
 
                 val viewSource = event.localState as? View //내가 드래그 한 원본 뷰, 이벤트의 localState에서 가져옴
@@ -41,7 +57,7 @@ class DragListener() : View.OnDragListener {
                                     val target: RecyclerView =
                                         v.parent as RecyclerView // 드롭 대상 뷰의 부모는 타겟, 리사이클러 뷰
 
-                                    positionTarget = v.tag as Int //드롭 대상인 뷰의 위치 인덱스
+                                    positionTarget = v.tag as Int + 1 //드롭 대상인 뷰의 위치 인덱스 + 1
                                     Log.d("MyLog", "positionTarget = $positionTarget")
 
                                     Log.d("MyLog", "viewSource $viewSource")
@@ -83,7 +99,7 @@ class DragListener() : View.OnDragListener {
                                     Log.d("MyLog", "btnClItem, sentenceClItem, rvTop, rvBottom")
                                     val target: RecyclerView = v.parent as RecyclerView //타겟은 리사이클러 뷰
 
-                                    positionTarget = v.tag as Int //드롭 대상인 뷰의 포지션
+                                    positionTarget = v.tag as Int //드롭 대상인 뷰의 위치 인덱스
                                     Log.d("MyLog", "positionTarget = $positionTarget")
 
                                     Log.d("MyLog", "viewSource $viewSource")
@@ -91,11 +107,20 @@ class DragListener() : View.OnDragListener {
                                         val source = viewSource.parent as RecyclerView //리사이클러뷰
                                         val adapterSource = source.adapter as RecyclerViewAdapter //어댑터
                                         val positionSource = viewSource.tag as Int //드래그한 아이템의 포지션
+                                        positionTarget = if(positionTarget < positionSource) positionTarget + 1 else positionTarget
+                                        //드래드하고 있는 뷰가 항상 드롭되는 위치의 하단에 추가되기 위함
+                                        //만약 드래그 하고 있는 뷰의 인덱스가 드롭되는 위치의 인덱스보다 작거나 동일하다면 자기 자신이 삭제되면서 드롭 되는 뷰의 실제 인덱스는 positionTarget -1이 된다.
+                                        //따라서 positionTarget은 드롭 되는 위치의 바로 다음을 의미한다.
+
+                                        //하지만 드래그 하고 있는 뷰의 인덱스가 드롭되는 위치의 인덱스보다 크다면 자기 자신이 삭제되어도
+                                        //드롭 되는 뷰의 실제 인덱스는 변동이 없다.
+                                        //따라서 positionTarget + 1을 해주어야 드롭되는 뷰의 하단에 위치하게 된다.
+
                                         Log.d("MyLog", "positionSource $positionSource")
                                         val list = adapterSource.getList()[positionSource] //드래그한 아이템 가져옴
                                         val listSource = adapterSource.getList().toMutableList() //전체 리스트
 
-                                        listSource.removeAt(positionSource) //전체 리스트에서 드래그한 아이템의 포지션 삭제
+                                        listSource.removeAt(positionSource) //전체 리스트에서 드래그한 아이템 원래 위치 삭제
                                         adapterSource.updateList(listSource) //전체 리스트 업데이트
                                         adapterSource.notifyDataSetChanged() //어댑터에 알림
 
@@ -103,8 +128,8 @@ class DragListener() : View.OnDragListener {
                                         Log.d("MyLog", "target $target")
                                         val customListTarget = adapterTarget.getList().toMutableList() //다시 리스트 가져옴
                                         Log.d("MyLog", "customListTarget $customListTarget")
-                                        if (positionTarget < 0) { //만약 드롭 할 위치가 0보다 작다면
-                                            customListTarget.add(list) //드래그 한 아이템을 리스트의 마지막에 추가
+                                        if (positionTarget < 0) { //만약 드롭 할 위치가 0보다 작다면 (리스트가 빈 경우)
+                                            customListTarget.add(list) //드래그 한 아이템을 리스트에 추가
                                         } else {
                                             customListTarget.add(positionTarget, list) //드래그한 아이템을 알맞은 위치에 추가
                                         }
@@ -117,15 +142,14 @@ class DragListener() : View.OnDragListener {
                     }
                 }
             }
-
-            DragEvent.ACTION_DRAG_EXITED -> {
-                Log.d("MyLog", "Enter ACTION_DRAG_EXITED")
+            DragEvent.ACTION_DRAG_ENDED, DragEvent.ACTION_DRAG_EXITED-> {
+                //val topDivider = v.findViewById<View>(R.id.divider_top)
+                val bottomDivider = v.findViewById<View>(R.id.divider_bottom)
+                //topDivider.visibility = View.GONE
+                bottomDivider.visibility = View.INVISIBLE
             }
         }
 
-        if (!isDropped && event.localState != null) {
-            (event.localState as? View)?.visibility = View.VISIBLE
-        }
         return true
     }
 }
