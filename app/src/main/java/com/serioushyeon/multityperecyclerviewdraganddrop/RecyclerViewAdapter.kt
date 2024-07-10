@@ -1,20 +1,16 @@
 package com.serioushyeon.multityperecyclerviewdraganddrop
 
 import android.content.ClipData
-import android.content.ClipDescription
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.serioushyeon.multityperecyclerviewdraganddrop.databinding.ItemSentenceItemBinding
 
-class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnTouchListener , View.OnLongClickListener {
+class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnLongClickListener {
 
 
     companion object {
@@ -72,15 +68,14 @@ class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : Recyc
     }
     override fun getItemCount(): Int = items.size
 
-    override fun onTouch(v: View, event: MotionEvent): Boolean {
-        if (event.action == MotionEvent.ACTION_DOWN) {
-            val data = ClipData.newPlainText("", "")
-            val shadowBuilder = View.DragShadowBuilder(v)
-            v.startDragAndDrop(data, shadowBuilder, v, 0)
-            return true
+    override fun getItemViewType(position: Int): Int {
+        return when (items[position]) {
+            is MultiTypeItem.TextItem -> TYPE_TEXT
+            is MultiTypeItem.BreathButtonItem -> TYPE_BREATH_BUTTON
+            is MultiTypeItem.PPTButtonItem -> TYPE_PPT_BUTTON
         }
-        return false
     }
+
     override fun onLongClick(v: View?): Boolean {
         Log.d("", "Long")
         val data = ClipData.newPlainText("", "")
@@ -101,13 +96,6 @@ class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>) : Recyc
             items.removeAt(position)
             notifyItemRemoved(position)
             notifyDataSetChanged()
-        }
-    }
-    override fun getItemViewType(position: Int): Int {
-        return when (items[position]) {
-            is MultiTypeItem.TextItem -> TYPE_TEXT
-            is MultiTypeItem.BreathButtonItem -> TYPE_BREATH_BUTTON
-            is MultiTypeItem.PPTButtonItem -> TYPE_PPT_BUTTON
         }
     }
 }
