@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 
+//두종류의 버튼과 텍스트뷰 총 3가지 아이템 종류를 가지는 리사이클러뷰의 어댑터
 class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>, private var recyclerView: RecyclerView) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), View.OnLongClickListener {
     //recyclerView 변수는 아이템 스크롤 시 부모뷰를 잃어버리기 때문에 추가한 변수
     companion object {
@@ -86,6 +87,11 @@ class RecyclerViewAdapter(private var items: MutableList<MultiTypeItem>, private
         val data = ClipData.newPlainText("", "")
         val shadowBuilder = View.DragShadowBuilder(v)
         v!!.startDragAndDrop(data, shadowBuilder, v.parent, 0)
+        //여기서 부모를 전달하는 이유는, 드래그 리스너는 버튼을 감싸는 부모 레이아웃에 달려있음
+        //하지만 롱클릭 리스너는 버튼에 달려져잇음
+        //따라서 리스너에게 드래그 리스너가 달린 객체와 드래그 하고 있는 객체를 동일하게 주기위해
+        //v.parent를 전달
+        //추후 리스너에서 v와 viewSource가 같으면 (자기 자신이면) 미리보기 보이지 않게 할 수 있음
         return true
     }
 
