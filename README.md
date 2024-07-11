@@ -4,7 +4,7 @@
 
 ## Discription 🛠
 - MultiType RecyclerView
-- RecyclerView Item Remove
+- Remove RecycleView Items
 - Drag and drop from outside to RecyclerView
 - Drag and drop inside the RecyclerView
 - Automatic scrolling when dragging a RecyclerView item
